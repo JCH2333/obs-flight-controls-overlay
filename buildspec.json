@@ -1,0 +1,39 @@
+{
+  "dependencies": {
+    "obs-studio": {
+      "version": "32.2.1",
+      "baseUrl": "https://github.com/obsproject/obs-studio/archive/refs/tags",
+      "label": "OBS sources",
+      "hashes": {
+        "windows-x64": ""
+      }
+    },
+    "prebuilt": {
+      "version": "2025-07-11",
+      "baseUrl": "https://github.com/obsproject/obs-deps/releases/download",
+      "label": "Pre-Built obs-deps",
+      "hashes": {
+        "windows-x64": ""
+      }
+    },
+    "qt6": {
+      "version": "2025-07-11",
+      "baseUrl": "https://github.com/obsproject/obs-deps/releases/download",
+      "label": "Pre-Built Qt6",
+      "hashes": {
+        "windows-x64": ""
+      }
+    }
+  },
+  "platformConfig": {
+    "windows": {
+      "architecture": "x64"
+    }
+  },
+  "name": "obs-flight-axis-overlay",
+  "displayName": "OBS Flight Controls Overlay",
+  "version": "1.0.0",
+  "author": "OBS Flight Controls Overlay Contributors",
+  "website": "",
+  "email": ""
+}

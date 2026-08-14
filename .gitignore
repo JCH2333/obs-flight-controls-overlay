@@ -1,0 +1,59 @@
+# Local OBS template dependency cache and build-number state
+/.deps/
+/.tooling/
+/cmake/.CMakeBuildNumber
+
+# CMake and generated build trees
+/build/
+/build-*/
+/out/
+/cmake-build-*/
+/.codegraph/
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+Testing/
+compile_commands.json
+install_manifest.txt
+cmake_install.cmake
+/obs.def
+
+# Native Windows build outputs
+*.obj
+*.o
+*.pdb
+*.idb
+*.ilk
+*.dll
+*.lib
+*.exp
+*.exe
+*.appx
+*.appxbundle
+
+# Visual Studio, Visual Studio Code, and user-specific configuration
+/.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vscode/
+CMakeUserPresets.json
+
+# Test and package outputs
+coverage/
+*.gcda
+*.gcno
+*.zip
+*.7z
+
+# OS and temporary files
+Thumbs.db
+Desktop.ini
+*.tmp
+*.bak
+*~
