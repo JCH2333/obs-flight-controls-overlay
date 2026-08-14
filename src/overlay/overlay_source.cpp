@@ -138,14 +138,32 @@ void ensure_gdiplus()
 	return result;
 }
 
-[[nodiscard]] Color color_from_obs(uint32_t rgba, float opacity, BYTE alpha_override = 255)
+[[nodiscard]] Color color_from_obs(uint32_t rgba, BYTE alpha_override = 255)
 {
 	const BYTE r = static_cast<BYTE>((rgba >> 24) & 0xffU);
 	const BYTE g = static_cast<BYTE>((rgba >> 16) & 0xffU);
 	const BYTE b = static_cast<BYTE>((rgba >> 8) & 0xffU);
-	const BYTE a = static_cast<BYTE>(std::clamp(std::lround(static_cast<float>(rgba & 0xffU) * opacity),
-								 0L, 255L));
+	const BYTE a = static_cast<BYTE>(rgba & 0xffU);
 	return Color(static_cast<BYTE>(std::min<int>(a, alpha_override)), r, g, b);
+}
+
+void apply_overall_opacity(std::vector<uint8_t> &pixels, float opacity)
+{
+	const float factor = std::isfinite(opacity) ? std::clamp(opacity, 0.0F, 1.0F) : 1.0F;
+	if (factor >= 0.9999F)
+		return;
+	if (factor <= 0.0001F) {
+		std::fill(pixels.begin(), pixels.end(), static_cast<uint8_t>(0));
+		return;
+	}
+
+	// OBS renders this texture using premultiplied-alpha blending. Scaling
+	// every BGRA component preserves anti-aliased edges while fading all UI
+	// elements together, including text, frames, and offline indicators.
+	for (uint8_t &component : pixels) {
+		component = static_cast<uint8_t>(std::clamp(
+			std::lround(static_cast<float>(component) * factor), 0L, 255L));
+	}
 }
 
 [[nodiscard]] AxisCalibration read_calibration(obs_data_t *settings, const char *minimum,
@@ -905,7 +923,7 @@ struct OverlaySource {
 
 		const int inset = std::clamp(safe_margin / 2, 8, 24);
 		const int label_height = 24;
-		const Color accent = color_from_obs(accent_color, opacity);
+		const Color accent = color_from_obs(accent_color);
 		std::string text = label;
 		if (!connected)
 			text += kOfflineSeparator + std::string(obs_module_text("Offline"));
@@ -1031,6 +1049,7 @@ struct OverlaySource {
 				std::memcpy(pixels.data() + static_cast<size_t>(row) * row_bytes, row_src, row_bytes);
 			}
 			bitmap.UnlockBits(&bitmap_data);
+			apply_overall_opacity(pixels, opacity);
 		}
 		texture_dirty = true;
 	}
@@ -1468,7 +1487,7 @@ obs_properties_t *source_properties(void *data)
 	obs_properties_t *display_group = obs_properties_create();
 	obs_properties_add_text(display_group, kLabel, obs_module_text("Label"), OBS_TEXT_DEFAULT);
 	obs_properties_add_color_alpha(display_group, kColor, obs_module_text("AccentColor"));
-	obs_properties_add_float_slider(display_group, kOpacity, obs_module_text("Opacity"), 0.0, 1.0, 0.05);
+	obs_properties_add_float_slider(display_group, kOpacity, obs_module_text("OverallOpacity"), 0.0, 1.0, 0.05);
 	obs_properties_add_int_slider(display_group, kDotSize, obs_module_text("DotSize"), 6, 40, 1);
 	obs_properties_add_int_slider(display_group, kMargin, obs_module_text("SafeMargin"), 6, 48, 1);
 	obs_properties_add_bool(display_group, kAutoHide, obs_module_text("AutoHide"));
