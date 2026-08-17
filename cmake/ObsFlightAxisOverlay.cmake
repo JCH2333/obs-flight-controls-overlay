@@ -284,6 +284,13 @@ function(obs_flight_axis_overlay_configure_target target)
   target_link_libraries("${target}" PRIVATE dinput8 dxguid gdiplus)
 
   if(MSVC)
+    # A release ZIP must work on a clean Windows installation. Statically
+    # linking the MSVC runtime removes the VCRUNTIME/MSVCP DLL dependency;
+    # obs.dll remains intentionally supplied by the user's OBS installation.
+    set_property(
+      TARGET "${target}"
+      PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+    )
     target_compile_options("${target}" PRIVATE /W4 /permissive- /utf-8 /Zc:__cplusplus)
     if(OBS_FLIGHT_AXIS_OVERLAY_WARNINGS_AS_ERRORS)
       target_compile_options("${target}" PRIVATE /WX)

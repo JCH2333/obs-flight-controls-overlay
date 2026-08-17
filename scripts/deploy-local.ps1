@@ -81,11 +81,14 @@ if (-not (Test-Path -LiteralPath $obsExecutable -PathType Leaf)) {
     throw "OBS 64-bit executable was not found under the selected installation: $obsExecutable"
 }
 
-$runningObs = @(Get-Process -Name 'obs64' -ErrorAction SilentlyContinue |
-    Where-Object { -not $_.HasExited })
-if ($runningObs.Count -gt 0) {
-    $processList = ($runningObs | ForEach-Object { "$($_.ProcessName) (PID $($_.Id))" }) -join ', '
-    throw "OBS must be closed before deployment. Running process: $processList"
+$runningTargetObs = @(Get-Process -Name 'obs64' -ErrorAction SilentlyContinue |
+    Where-Object {
+        -not $_.HasExited -and $_.Path -and
+        [string]::Equals($_.Path, $obsExecutable, [System.StringComparison]::OrdinalIgnoreCase)
+    })
+if ($runningTargetObs.Count -gt 0) {
+    $processList = ($runningTargetObs | ForEach-Object { "$($_.ProcessName) (PID $($_.Id))" }) -join ', '
+    throw "The selected OBS installation must be closed before deployment. Running process: $processList"
 }
 
 $pluginDestinationDirectory = Join-Path $obsRootPath 'obs-plugins\64bit'

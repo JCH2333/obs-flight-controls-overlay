@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(obs-flight-axis-overlay VERSION 1.0.0 LANGUAGES CXX)
+project(obs-flight-axis-overlay VERSION 1.0.1 LANGUAGES CXX)
 
 if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
   message(FATAL_ERROR "obs-flight-axis-overlay supports only 64-bit Windows builds.")
@@ -54,6 +54,49 @@ obs_flight_axis_overlay_configure_target(obs-flight-axis-overlay)
 obs_flight_axis_overlay_add_deploy_target(
   obs-flight-axis-overlay
   DATA_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/obs-plugins/obs-flight-axis-overlay"
+)
+
+install(
+  TARGETS obs-flight-axis-overlay
+  RUNTIME DESTINATION "obs-plugins/64bit"
+  LIBRARY DESTINATION "obs-plugins/64bit"
+)
+install(
+  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/obs-plugins/obs-flight-axis-overlay"
+  DESTINATION "data/obs-plugins"
+)
+install(
+  PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/scripts/Install-OBSFlightControlsOverlay.ps1"
+  DESTINATION "."
+)
+install(
+  FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/scripts/Install-OBSFlightControlsOverlay.cmd"
+    "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+  DESTINATION "."
+)
+
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_PACKAGE_FILE_NAME "obs-flight-controls-overlay-${PROJECT_VERSION}-windows-x64")
+set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/dist")
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+set(CPACK_VERBATIM_VARIABLES YES)
+include(CPack)
+
+add_custom_target(
+  package-release
+  COMMAND
+    "${CMAKE_CPACK_COMMAND}"
+    --config
+    "${CMAKE_BINARY_DIR}/CPackConfig.cmake"
+    -G
+    ZIP
+    -C
+    "$<CONFIG>"
+  DEPENDS obs-flight-axis-overlay
+  USES_TERMINAL
+  VERBATIM
+  COMMENT "Packaging the Windows x64 OBS plugin release archive"
 )
 
 include(CTest)

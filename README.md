@@ -23,29 +23,30 @@
 
 ## 安装
 
-后续发布包会包含下列目录结构。请先关闭 OBS，再将文件复制到 OBS 安装目录：
+请从 GitHub 的 **Releases** 页面下载 `obs-flight-controls-overlay-<版本>-windows-x64.zip`。不要下载 GitHub 自动生成的 `Source code (zip)`，该源码包按设计不包含编译后的 DLL。
 
-```text
-obs-flight-axis-overlay.dll
-data/
-  obs-plugins/
-    obs-flight-axis-overlay/
-      locale/
-        en-US.ini
-        zh-CN.ini
+1. 解压发布 ZIP 到任意临时目录。
+2. 关闭 OBS。
+3. 双击解压目录根部的 `Install-OBSFlightControlsOverlay.cmd`。
+4. 安装脚本会自动查找标准版和 Steam 版 OBS，并复制 DLL 与本插件的语言文件。
+5. 启动 OBS，在来源列表中添加 **外设轴映射**。
+
+如果电脑中安装了多个 OBS，使用 PowerShell 指定目标安装目录：
+
+```powershell
+.\Install-OBSFlightControlsOverlay.ps1 -ObsRoot "D:\Apps\OBS Studio"
 ```
 
-复制规则：
+发布 ZIP 的目录结构已与 OBS 安装目录对齐：
 
 ```text
-obs-flight-axis-overlay.dll
-  -> <OBS 安装目录>\obs-plugins\64bit\
-
-data\obs-plugins\obs-flight-axis-overlay\
-  -> <OBS 安装目录>\data\obs-plugins\obs-flight-axis-overlay\
+Install-OBSFlightControlsOverlay.cmd
+Install-OBSFlightControlsOverlay.ps1
+obs-plugins\64bit\obs-flight-axis-overlay.dll
+data\obs-plugins\obs-flight-axis-overlay\locale\
 ```
 
-完成后启动 OBS。不要在 OBS 运行期间替换 DLL。
+安装脚本不会关闭 OBS、不会删除其他插件文件；所选 OBS 安装正在运行时会停止并提示先关闭该实例。发布 DLL 使用静态 MSVC 运行时，不依赖单独安装 `VCRUNTIME` 或 `MSVCP` DLL；`obs.dll` 由已安装的 OBS 提供。
 
 ## 使用方法
 
@@ -126,7 +127,10 @@ cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
   -DOBS_SDK_PREFIX="C:\SDK\obs"
 cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure
+cmake --build build --config Release --target package-release
 ```
+
+发布 ZIP 会生成在 `build\dist\obs-flight-controls-overlay-<版本>-windows-x64.zip`，可直接上传到 GitHub Release。
 
 只有 OBS 运行时安装、需要进行本机测试时，可启用运行时导入库回退。源码版本必须与运行时 OBS 匹配：
 
@@ -160,4 +164,4 @@ cmake --build build --config Release --target deploy-local
 
 ## 开发状态
 
-此项目当前处于 V1 开发阶段。发布前会提供版本号、发行说明和适用于 OBS 的构建产物。
+此项目当前处于 V1 开发阶段。请使用 Releases 页面中的 Windows x64 ZIP 安装，不要将 GitHub 源码包当作插件安装包。
