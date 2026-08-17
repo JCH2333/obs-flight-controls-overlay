@@ -4,5 +4,5 @@
 #define PLUGIN_NAME "obs-flight-axis-overlay"
 #endif
 #ifndef PLUGIN_VERSION
-#define PLUGIN_VERSION "1.0.1"
+#define PLUGIN_VERSION "1.0.2"
 #endif

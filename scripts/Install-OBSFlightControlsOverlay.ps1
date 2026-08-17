@@ -22,6 +22,11 @@ $packageRoot = (Resolve-Path -LiteralPath $PSScriptRoot -ErrorAction Stop).Path
 $pluginDll = Join-Path $packageRoot "obs-plugins\64bit\$moduleName.dll"
 $pluginData = Join-Path $packageRoot "data\obs-plugins\$moduleName"
 $candidates = New-Object System.Collections.Generic.List[string]
+$discoveryHelpers = Join-Path $packageRoot 'obs-install-discovery.ps1'
+if (-not (Test-Path -LiteralPath $discoveryHelpers -PathType Leaf)) {
+    throw "Release discovery helper was not found: $discoveryHelpers"
+}
+. $discoveryHelpers
 
 function Get-NormalizedPath {
     param(
@@ -140,10 +145,8 @@ function Resolve-ObsRoot {
             'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*',
             'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*')) {
         $entries = @(Get-ItemProperty -Path $registryPath -ErrorAction SilentlyContinue)
-        foreach ($entry in $entries) {
-            if ($entry.DisplayName -like 'OBS Studio*' -and $entry.InstallLocation) {
-                Add-ObsCandidate -Path $entry.InstallLocation
-            }
+        foreach ($installLocation in @(Get-ObsFlightControlsOverlayRegistryInstallLocations -Entries $entries)) {
+            Add-ObsCandidate -Path $installLocation
         }
     }
 

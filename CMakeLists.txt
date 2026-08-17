@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(obs-flight-axis-overlay VERSION 1.0.1 LANGUAGES CXX)
+project(obs-flight-axis-overlay VERSION 1.0.2 LANGUAGES CXX)
 
 if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
   message(FATAL_ERROR "obs-flight-axis-overlay supports only 64-bit Windows builds.")
@@ -66,7 +66,9 @@ install(
   DESTINATION "data/obs-plugins"
 )
 install(
-  PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/scripts/Install-OBSFlightControlsOverlay.ps1"
+  PROGRAMS
+    "${CMAKE_CURRENT_SOURCE_DIR}/scripts/Install-OBSFlightControlsOverlay.ps1"
+    "${CMAKE_CURRENT_SOURCE_DIR}/scripts/obs-install-discovery.ps1"
   DESTINATION "."
 )
 install(
@@ -105,4 +107,17 @@ if(BUILD_TESTING)
   target_include_directories(axis_mapping_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
   target_compile_features(axis_mapping_tests PRIVATE cxx_std_20)
   add_test(NAME axis_mapping_tests COMMAND axis_mapping_tests)
+
+  find_program(OBS_FLIGHT_AXIS_OVERLAY_TEST_POWERSHELL NAMES pwsh powershell REQUIRED)
+  add_test(
+    NAME installer_discovery_tests
+    COMMAND
+      "${OBS_FLIGHT_AXIS_OVERLAY_TEST_POWERSHELL}"
+      -NoLogo
+      -NoProfile
+      -ExecutionPolicy
+      Bypass
+      -File
+      "${CMAKE_CURRENT_SOURCE_DIR}/tests/installer_discovery_tests.ps1"
+  )
 endif()
