@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(obs-flight-axis-overlay VERSION 1.0.2 LANGUAGES CXX)
+project(obs-flight-axis-overlay VERSION 1.0.3 LANGUAGES CXX)
 
 if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
   message(FATAL_ERROR "obs-flight-axis-overlay supports only 64-bit Windows builds.")

@@ -152,15 +152,13 @@ function Resolve-ObsRoot {
 
     Add-SteamObsCandidates
 
-    if ($candidates.Count -eq 1) {
-        return $candidates[0]
-    }
-    if ($candidates.Count -eq 0) {
-        throw "OBS Studio was not found. Run this script with -ObsRoot '<OBS installation directory>'."
-    }
-
-    $available = $candidates -join [Environment]::NewLine
-    throw "Multiple OBS installations were found. Run this script with -ObsRoot to choose one:$([Environment]::NewLine)$available"
+    $selectedRoot = Resolve-ObsFlightControlsOverlayInstallationCandidate `
+        -Candidates @($candidates.ToArray()) `
+        -TestInstallation {
+            param([string]$Path)
+            Test-ObsInstallation -Path $Path
+        }
+    return (Resolve-Path -LiteralPath $selectedRoot -ErrorAction Stop).Path
 }
 
 $pluginDllPath = Get-NormalizedPath -Path $pluginDll -Description 'Release plugin DLL'

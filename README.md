@@ -28,10 +28,10 @@
 1. 解压发布 ZIP 到任意临时目录。
 2. 关闭 OBS。
 3. 双击解压目录根部的 `Install-OBSFlightControlsOverlay.cmd`。
-4. 安装脚本会自动查找标准版和 Steam 版 OBS，并复制 DLL 与本插件的语言文件。
+4. 安装脚本会自动查找标准版和 Steam 版 OBS。未找到或找到多套 OBS 时，会弹出目录选择窗口；请选择包含 `bin\64bit\obs64.exe` 的 OBS 安装根目录。
 5. 启动 OBS，在来源列表中添加 **外设轴映射**。
 
-如果电脑中安装了多个 OBS，使用 PowerShell 指定目标安装目录：
+如需通过 PowerShell 显式指定目标安装目录，也可运行：
 
 ```powershell
 .\Install-OBSFlightControlsOverlay.ps1 -ObsRoot "D:\Apps\OBS Studio"
@@ -47,6 +47,15 @@ data\obs-plugins\obs-flight-axis-overlay\locale\
 ```
 
 安装脚本不会关闭 OBS、不会删除其他插件文件；所选 OBS 安装正在运行时会停止并提示先关闭该实例。发布 DLL 使用静态 MSVC 运行时，不依赖单独安装 `VCRUNTIME` 或 `MSVCP` DLL；`obs.dll` 由已安装的 OBS 提供。
+
+### 手动安装
+
+当自动安装器无法运行时，关闭 OBS 后仅复制以下两项：
+
+1. 将 `obs-plugins\64bit\obs-flight-axis-overlay.dll` 复制到 OBS 安装目录的同一路径。
+2. 将 `data\obs-plugins\obs-flight-axis-overlay\` 合并复制到 OBS 安装目录的同一路径。
+
+不要覆盖整个 `obs-plugins` 或 `data` 目录，以免影响其他插件。
 
 ## 使用方法
 

@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0Install-OBSFlightControlsOverlay.ps1"
+powershell.exe -STA -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0Install-OBSFlightControlsOverlay.ps1"
 set "exitCode=%ERRORLEVEL%"
 
 echo.
